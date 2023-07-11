@@ -273,7 +273,7 @@ app.listen(config.PORT, () => {
     console.log('Launching local tunnel.')
     localtunnel({ port: config.PORT })
         .then((tunnel) => {
-            console.log(`Tunnel URL for use on agnai.chat: ${tunnel.url}`);
+            console.log(`Tunnel URL for use on risuai.xyz: ${tunnel.url}`);
         })
 });
 
