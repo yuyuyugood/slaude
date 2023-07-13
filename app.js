@@ -12,7 +12,7 @@ const app = express();
 
 const typingString = "\n\n_Typing…_";
 
-const maxMessageLength = 12000;
+const maxMessageLength = 6000;
 // Overhead to take into account when splitting messages, for example, the length of "Human:"
 const messageLengthOverhead = 20;
 
