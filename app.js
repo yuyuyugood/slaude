@@ -834,7 +834,7 @@ function finishStreamTimeout(res, thread, delay = 0) {
 /**
  * Takes the OpenAI formatted messages send by SillyTavern and converts them into multiple plain text
  * prompt chunks. Each chunk should fit into a single Slack chat message without getting cut off.
- * Default is 12000 characters. Slack messages can fit a little more but that gives us some leeway.
+ * Default is 6000 characters. Slack messages can fit a little more but that gives us some leeway.
  * @param {*} messages Prompt messages in OpenAI chat completion format
  * @returns An array of plain text prompt chunks
  */
