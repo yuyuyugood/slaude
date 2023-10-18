@@ -1,3 +1,5 @@
+## 已添加clewd修改版的FullColon、xmlPlot与localtunnel功能
+
 ### Slaude is a small server serving as an interface between SillyTavern and Claude on Slack
 This aims to serve as an alternative, but not a replacement, for Spermack. If Spermack works fine for you or you like its features there is no reason to use this beyond curiosity.
 
