@@ -887,7 +887,7 @@ function convertToPrompt(msg, idx) {
         if (config.rename_roles[msg.name]) {
             return `${config.rename_roles[msg.name]}: ${msg.content}\n\n`
         } else if ('name' in msg) {
-            return `${config.rename_roles[msg.role]}: ${config.rename_roles[msg.name]}: ${msg.content}\n\n`
+            return `${config.rename_roles[msg.role]}: ${msg.name}: ${msg.content}\n\n`
         }
     }
     if (config.rename_roles[msg.role]) {
