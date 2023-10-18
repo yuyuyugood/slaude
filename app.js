@@ -3,7 +3,8 @@ import axios from 'axios';
 import FormData from 'form-data';
 import WebSocket from 'ws';
 import config from './config.js';
-import splitMessageInTwo from './utils.js';
+import {splitMessageInTwo} from './utils.js';
+import {xmlPlot} from './utils.js';
 import localtunnel from 'localtunnel';
 
 
@@ -270,11 +271,13 @@ app.listen(config.PORT, () => {
     console.log(`Slaude is running at http://localhost:${config.PORT}`);
     console.log('Checking config.')
     checkConfig();
-    console.log('Launching local tunnel.')
-    localtunnel({ port: config.PORT })
-        .then((tunnel) => {
-            console.log(`Tunnel URL for use on risuai.xyz: ${tunnel.url}`);
-        })
+    if (config.localtunnel) {
+        console.log('Launching local tunnel.')
+        localtunnel({ port: config.PORT })
+            .then((tunnel) => {
+                console.log(`Tunnel URL: ${tunnel.url}`);
+            })
+    }
 });
 
 function checkConfig() {
@@ -860,6 +863,11 @@ function buildSlackPromptMessages(messages) {
         }
     }
     prompts.push(currentPrompt);
+    let merge = prompts.join('\n\n<|splitprompt|>\n\n');
+    config.xmlPlot && (merge = xmlPlot(merge));
+    config.FullColon && (merge = merge.replace(/(?<=\n\n(H(?:uman)?|A(?:ssistant)?)):[ ]?/g, '： '));
+    prompts = merge.split('<|splitprompt|>');
+    prompts = prompts.map(prompt => prompt.trim());
     return prompts;
 }
 
@@ -876,8 +884,10 @@ function convertToPrompt(msg, idx) {
         return `${msg.content}\n\n`
     }
     if (msg.role === 'system') {
-        if ('name' in msg) {
+        if (config.rename_roles[msg.name]) {
             return `${config.rename_roles[msg.name]}: ${msg.content}\n\n`
+        } else if ('name' in msg) {
+            return `${config.rename_roles[msg.role]}: ${config.rename_roles[msg.name]}: ${msg.content}\n\n`
         }
     }
     if (config.rename_roles[msg.role]) {

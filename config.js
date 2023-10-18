@@ -1,11 +1,16 @@
 const config = {
-    TOKEN: "xoxc-xxxx",
-    COOKIE: "xoxd-xxxx",
-    TEAM_ID: "workspacename",
-    CHANNEL: "C1234D4567S",
-    CLAUDE_USER: "U1234A568BC",
+    TOKEN: process.env.TOKEN || "xoxc-xxxx",
+    COOKIE: process.env.COOKIE || "xoxd-xxxx",
+    TEAM_ID: process.env.TEAMID || "workspacename",
+    CHANNEL: process.env.CHANNEL || "C1234D4567S",
+    CLAUDE_USER: process.env.CLAUDEUSER || "U1234A568BC",
 
-    edit_msg_with_ping: true,
+    //xmlPlot开启时在下面rename_roles中system需要转换为xmlPlot作为过程前缀
+    FullColon: true,
+    xmlPlot: true,
+    localtunnel: false,
+
+    edit_msg_with_ping: false,
 
     // if edit_msg_with_ping is false:
     // (i.e.send new message with ping instead of editting the first one)
@@ -31,9 +36,9 @@ const config = {
     // Claude specs:
     // Human, Assistant, H, A
     rename_roles: {
-        'system': 'H',
-        'user': 'H',
-        'assistant': 'A',
+        'system': 'xmlPlot',
+        'user': 'Human',
+        'assistant': 'Assistant',
         'example_user': 'H',
         'example_assistant': 'A',
     },
@@ -45,6 +50,7 @@ const config = {
         "\nH: ",
         "\nHuman: ",
         "<EOT>",
+        "<META>",
     ],
 
     // redo the request up to this amount, if it fails
@@ -74,6 +80,7 @@ const config = {
         "(unable to|not|cannot) (continue|respond|provide|appropriate|assist)",
         "inappropriate",
         "content",
+        "Anthropic",
     ],
     // wait before starting to send text, lest it be filtered
     auto_swipe_prebuffer_length: 200,

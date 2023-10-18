@@ -128,4 +128,81 @@ function findLastSentenceBreak(text) {
 	return -1;
 }
 
-export default	splitMessageInTwo
+function xmlPlot(content) {
+	// 检查内容中是否包含"<card>"
+    if (!content.includes('<card>')) {
+        return content.replace(/(\n\n|^)xmlPlot:\s*/gm, '$1');
+    }
+
+    //role合并
+    if (!content.includes('<\!-- Merge Disable -->')) {
+        if (!content.includes('<\!-- Merge Human Disable -->')) {
+            content = content.replace(/(\n\n|^)xmlPlot:/g, '$1Human:');
+            content = content.replace(/(?:\n\n|^)Human:(.*?(?:\n\nAssistant:|$))/gs, function(match, p1) {return '\n\nHuman:' + p1.replace(/\n\nHuman:\s*/g, '\n\n')});
+            content = content.replace(/^\s*Human:\s*/, '');
+        }
+        if (!content.includes('<\!-- Merge Assistant Disable -->')) {
+            content = content.replace(/\n\nAssistant:(.*?(?:\n\nHuman:|$))/gs, function(match, p1) {return '\n\nAssistant:' + p1.replace(/\n\nAssistant:\s*/g, '\n\n')});
+        }
+    }
+    content = content.replace(/(\n\n|^)xmlPlot:\s*/gm, '$1');
+
+    //自定义插入
+    content = content.replace(/(<\/?)PrevAssistant>/gm, '$1@1>');
+    content = content.replace(/(<\/?)PrevHuman>/gm, '$1@2>');
+    let splitContent = content.split(/\n\n(?=Assistant:|Human:)/g);
+    let match;
+    while ((match = /<@(\d+)>(.*?)<\/@\1>/gs.exec(content)) !== null) {
+        let index = splitContent.length - parseInt(match[1]) - 1;
+        if (index >= 0) {
+            splitContent[index] += '\n\n' + match[2];
+        }
+        content = content.replace(match[0], '');
+    }
+    content = splitContent.join('\n\n');
+    content = content.replace(/<@(\d+)>.*?<\/@\1>/gs, '');
+
+    //越狱倒置
+    let segcontentHuman = content.split('\n\nHuman:');
+    const seglength = segcontentHuman.length;
+    if (/Assistant: *.$/.test(content) && seglength > 1 && !segcontentHuman[seglength - 2].includes('\n\nAssistant:')) {
+        segcontentHuman[seglength - 2] = segcontentHuman.splice(seglength - 1, 1, segcontentHuman[seglength - 2])[0];
+    }
+    content = segcontentHuman.join('\n\nHuman:');
+
+    //二次role合并
+    if (!content.includes('<\!-- Merge Disable -->')) {
+        if (!content.includes('<\!-- Merge Human Disable -->')) {
+            content = content.replace(/(?:\n\n|^)Human:(.*?(?:\n\nAssistant:|$))/gs, function(match, p1) {return '\n\nHuman:' + p1.replace(/\n\nHuman:\s*/g, '\n\n')});
+            content = content.replace(/^\s*Human:\s*/, '');
+        }
+        if (!content.includes('<\!-- Merge Assistant Disable -->')) {
+            content = content.replace(/\n\nAssistant:(.*?(?:\n\nHuman:|$))/gs, function(match, p1) {return '\n\nAssistant:' + p1.replace(/\n\nAssistant:\s*/g, '\n\n')});
+        }
+    }
+    content = content.replace(/<\!-- Merge.*?Disable -->/gm, '');
+
+    // 在第一个"[Start a new"前面加上"<example>"，在最后一个"[Start a new"前面加上"</example>\n\n<plot>\n\n"
+    const exampleNote = content.match(/(?<=<example-note>).*(?=<\/example-note>)/) || '';
+    const cardtag = content.match(/(?=\n\n<\/card>)/) || '</card>';
+    const exampletag = content.match(/(?=\n\n<\/example>)/) || '</example>';
+    const plot = content.includes('</plot>') ? '<plot>' : '';
+    content = content.replace(/<example-note>.*<\/example-note>/, '');
+    const firstChatStart = content.indexOf('\n\n[Start a new');
+    const lastChatStart = content.lastIndexOf('\n\n[Start a new');
+    firstChatStart != -1 && firstChatStart === lastChatStart && (content = content.slice(0, firstChatStart) + `\n\n${cardtag}` + content.slice(firstChatStart));
+    firstChatStart != lastChatStart && (content = content.slice(0, firstChatStart) + `\n\n${cardtag}\n\n${exampleNote}\n<example>` + content.slice(firstChatStart, lastChatStart) + `\n\n${exampletag}\n\n${plot}` + content.slice(lastChatStart));
+
+    //消除空XML tags或多余的\n
+    content = content.replace(/\s*<\|curtail\|>\s*/g, '\n');
+    content = content.replace(/\n<\/(hidden|META)>\s+?<\1>\n/g, '');
+    content = content.replace(/\n<(\/?card|example|hidden|plot|META)>\s+?<\1>/g, '\n<$1>');
+    content = content.replace(/(?:<!--.*?-->)?\n<(card|example|hidden|plot|META)>\s+?<\/\1>/g, '');
+    content = content.replace(/(?<=(: |\n)<(card|hidden|example|plot|META|EOT)>\n)\s*/g, '');
+    content = content.replace(/\s*(?=\n<\/(card|hidden|example|plot|META|EOT)>(\n|$))/g, '');
+    content = content.replace(/(?<=\n)\n(?=\n)/g, '');
+
+    return content.trim();
+}
+
+export {splitMessageInTwo, xmlPlot}	
