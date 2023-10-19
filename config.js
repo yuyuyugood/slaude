@@ -1,9 +1,9 @@
 const config = {
-    TOKEN: process.env.TOKEN || "xoxc-xxxx",
-    COOKIE: process.env.COOKIE || "xoxd-xxxx",
-    TEAM_ID: process.env.TEAMID || "workspacename",
-    CHANNEL: process.env.CHANNEL || "C1234D4567S",
-    CLAUDE_USER: process.env.CLAUDEUSER || "U1234A568BC",
+    TOKEN: process.env.TOKEN || "xoxc-6056725914018-6056631489795-6062410362578-87dcff433bcdb031ed23c45a270745f3bcf7741988ca95b5694d25b93c4dd1de",
+    COOKIE: process.env.COOKIE || "xoxd-GRgoQ%2FA4Ot381fNvshb1y5xcY%2BtqNLRYNyZICkqFbGutLRJa3WEA%2Fgi4qSQHDUywRpmNsiOGujk%2FjmTX%2B6BhEz0G2uJeuK3BYl%2F3%2F3%2BKS8RZC8rs6xWtvN71HjCFyIS7jmrBYFHODO0pC045v4PHEmcO1pDdtP0m0JXNzStNO473JjW%2FKw%2BUf09yjaDlXh0emXrX8%2FeUvmA%3D",
+    TEAM_ID: process.env.TEAMID || "qq-xpv3902",
+    CHANNEL: process.env.CHANNEL || "C061NJKGNN7",
+    CLAUDE_USER: process.env.CLAUDEUSER || "U061R59SKK6",
 
     //xmlPlot开启时在下面rename_roles中system需要转换为xmlPlot作为过程前缀
     FullColon: true,
